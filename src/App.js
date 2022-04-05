@@ -1,42 +1,20 @@
+import { Route, Routes } from "react-router-dom";
+import "./app.scss";
+import Home from "./components/home/home.component";
+import Navigation from "./components/navigation/navigation.component";
+import Shop from "./components/shop/shop.component";
+import Authentication from "./components/authentication/auththentication.component";
+
 const App = () => {
   return (
-    <div className='categories-container'>
-      <div className='category-container'>
-        {/* <img /> */}
-        <div className='category-body-container'>
-          <h2>Hats</h2>
-          <p>Shop Now</p>
-        </div>
-      </div>
-      <div className='category-container'>
-        {/* <img /> */}
-        <div className='category-body-container'>
-          <h2>Jackets</h2>
-          <p>Shop Now</p>
-        </div>
-      </div>
-      <div className='category-container'>
-        {/* <img /> */}
-        <div className='category-body-container'>
-          <h2>Sneakers</h2>
-          <p>Shop Now</p>
-        </div>
-      </div>
-      <div className='category-container'>
-        {/* <img /> */}
-        <div className='category-body-container'>
-          <h2>Womens</h2>
-          <p>Shop Now</p>
-        </div>
-      </div>
-      <div className='category-container'>
-        {/* <img /> */}
-        <div className='category-body-container'>
-          <h2>Mens</h2>
-          <p>Shop Now</p>
-        </div>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<Navigation />}>
+        {/* This is called: Nested route */}
+        <Route index element={<Home />}></Route>
+        <Route path="shop" element={<Shop />}></Route>
+        <Route path="auth" element={<Authentication />}></Route>
+      </Route>
+    </Routes>
   );
 };
 
