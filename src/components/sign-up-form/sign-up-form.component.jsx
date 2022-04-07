@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { UserContext } from "../../contexts/user.context";
 import { createAuthUserFromEmailAndPassword, createUserToFireStore } from "../../utils/firebase/firebase.util";
 import Button from "../button/button.component";
 import FormInput from "../form-input/form-input.component";
@@ -13,6 +14,7 @@ const SignUp = () => {
     }
     const [formData, setFormData] = useState(defaultFormData);
     const { displayName, email, password, confirmedPassword } = formData;
+
     const onInputChange = (event) => {
         const { name, value } = event.target;
         // really cool here
@@ -27,9 +29,8 @@ const SignUp = () => {
             return;
         }
         try {
-            const authUser = await createAuthUserFromEmailAndPassword(email, password);
-            await createUserToFireStore(authUser.user, { displayName })
-            alert(`Create user ${displayName} successfully`);
+            await createAuthUserFromEmailAndPassword(email, password);
+            alert(`Create user "${displayName}" successfully`);
             onResetForm();
         } catch (error) {
             if (error.code == "auth/email-already-in-use") {
@@ -51,7 +52,7 @@ const SignUp = () => {
                 <FormInput label={"Email"} type="email" onChange={onInputChange} name="email" value={email} required />
                 <FormInput label={"Password"} type="password" onChange={onInputChange} name="password" value={password} required />
                 <FormInput label={"Confirmed password"} type="password" onChange={onInputChange} name="confirmedPassword" value={confirmedPassword} required />
-                <Button buttonType={"inverted"} type="submit" children={"SIGN UP"}/>
+                <Button buttonType={"inverted"} type="submit" children={"SIGN UP"} />
             </form>
         </div>
     )

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { auth, signInWithGooglePopup, signInAuthUserWithEmailAndPassword, createUserToFireStore } from "../../utils/firebase/firebase.util";
 import { getRedirectResult } from "firebase/auth";
 import Button from "../button/button.component";
 import FormInput from "../form-input/form-input.component";
 import "./sign-in.style.scss";
+import { UserContext } from "../../contexts/user.context";
 const SignIn = () => {
     // useEffect(async () => {
     //     const response = await getRedirectResult(auth);
@@ -13,10 +14,6 @@ const SignIn = () => {
     //         console.log(user);
     //     }
     // }, [])
-    const signinGoogleUser = async () => {
-        const { user } = await signInWithGooglePopup();
-        await createUserToFireStore(user);
-    }
     const defaultFormData = {
         'email': "",
         'password': "",
@@ -32,12 +29,15 @@ const SignIn = () => {
         setFormData(defaultFormData);
     }
 
+    const signinGoogleUser = async () => {
+        await signInWithGooglePopup();
+    }
+
     const onSubmitForm = async (event) => {
         event.preventDefault();
         const { email, password } = formData;
         try {
-            const authUser = await signInAuthUserWithEmailAndPassword(email, password);
-            console.log(authUser);
+            await signInAuthUserWithEmailAndPassword(email, password);
             onResetForm();
         } catch (error) {
             if (['auth/wrong-password', "auth/user-not-found"].includes(error.code)) {
