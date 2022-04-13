@@ -4,7 +4,6 @@ import { getRedirectResult } from "firebase/auth";
 import Button from "../button/button.component";
 import FormInput from "../form-input/form-input.component";
 import "./sign-in.style.scss";
-import { UserContext } from "../../contexts/user.context";
 const SignIn = () => {
     // useEffect(async () => {
     //     const response = await getRedirectResult(auth);

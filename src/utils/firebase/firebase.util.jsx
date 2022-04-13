@@ -10,7 +10,16 @@ import {
     signOut,
     onAuthStateChanged,
 } from 'firebase/auth'
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    collection,
+    writeBatch,
+    query,
+    getDocs,
+} from 'firebase/firestore';
 const firebaseConfig = {
     apiKey: "AIzaSyDppAi2UnOryYFyRyEDOy_cDHEMVshv_8E",
     authDomain: "react-crown-clothing-9e097.firebaseapp.com",
@@ -41,6 +50,22 @@ export const signInWithGithubPopup = () => signInWithPopup(auth, githubProvider)
 
 const db = getFirestore();
 
+export const createCollectionShopData = async (collectionKey, objectsToAdd) => {
+    // get a collection and create new if not exist
+    const collectionRef = collection(db, collectionKey);
+    // start the transaction
+    const batch = writeBatch(db);
+    objectsToAdd.forEach(object => {
+        // create a doc from above collection
+        const docRef = doc(collectionRef, object.title.toLowerCase());
+        // Set value for the doc
+        batch.set(docRef, object);
+    });
+    // await for the transaction to complete
+    await batch.commit();
+    console.log("done!");
+}
+
 export const createUserToFireStore = async (userAuth, additionalData = {}) => {
     if (!userAuth) return;
 
@@ -66,6 +91,18 @@ export const createUserToFireStore = async (userAuth, additionalData = {}) => {
     }
     // if yes just return userDocRef
     return userDocRef;
+}
+
+export const getCollectionData = async (collectionKey) => {
+    const collectionRef = await collection(db, collectionKey);
+    const queryRef = query(collectionRef);
+    const querySnapShot = await getDocs(queryRef);
+    const data = querySnapShot.docs.reduce((continuity, docObject) => {
+        const { title, items } = docObject.data();
+        continuity[title.toLowerCase()] = items;
+        return continuity;
+    }, {});
+    return data;
 }
 
 export const createAuthUserFromEmailAndPassword = async (email, password) => {
