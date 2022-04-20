@@ -90,19 +90,14 @@ export const createUserToFireStore = async (userAuth, additionalData = {}) => {
         }
     }
     // if yes just return userDocRef
-    return userDocRef;
+    return userSnapShot;
 }
 
 export const getCollectionData = async (collectionKey) => {
     const collectionRef = await collection(db, collectionKey);
     const queryRef = query(collectionRef);
     const querySnapShot = await getDocs(queryRef);
-    const data = querySnapShot.docs.reduce((continuity, docObject) => {
-        const { title, items } = docObject.data();
-        continuity[title.toLowerCase()] = items;
-        return continuity;
-    }, {});
-    return data;
+    return querySnapShot.docs.map((docObject) => docObject.data());
 }
 
 export const createAuthUserFromEmailAndPassword = async (email, password) => {
@@ -122,4 +117,17 @@ export const signOutUser = async () => {
 
 export const onAuthStateChangedListener = async (callback) => {
     return await onAuthStateChanged(auth, callback);
+}
+
+export const getCurrentUser = () => {
+    return new Promise((resolve, reject) => {
+        const unsubscribe = onAuthStateChanged(
+            auth,
+            (authUser) => {
+                unsubscribe();
+                resolve(authUser);
+            },
+            reject
+        );
+    });
 }

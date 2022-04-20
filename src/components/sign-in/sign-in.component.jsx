@@ -1,18 +1,23 @@
-import { useContext, useEffect, useState } from "react";
-import { auth, signInWithGooglePopup, signInAuthUserWithEmailAndPassword, createUserToFireStore } from "../../utils/firebase/firebase.util";
-import { getRedirectResult } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { emailSignInStart, googleSignInStart } from "../../store/user/user.actions";
+import { selectErrorMapping, selectLoading } from "../../store/user/user.selectors";
+import { signInWithGooglePopup, signInAuthUserWithEmailAndPassword } from "../../utils/firebase/firebase.util";
 import Button from "../button/button.component";
 import FormInput from "../form-input/form-input.component";
 import "./sign-in.style.scss";
 const SignIn = () => {
-    // useEffect(async () => {
-    //     const response = await getRedirectResult(auth);
-    //     console.log(response);
-    //     if (response) {
-    //         const user = await createUserToFireStore(response.user);
-    //         console.log(user);
-    //     }
-    // }, [])
+    const dispatch = useDispatch();
+    const isLoadingSignIn = useSelector(selectLoading);
+    const signInError = useSelector(selectErrorMapping);
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (signInError) {
+            alert(signInError)
+        }
+    }, [isLoadingSignIn]);
+
     const defaultFormData = {
         'email': "",
         'password': "",
@@ -29,21 +34,14 @@ const SignIn = () => {
     }
 
     const signinGoogleUser = async () => {
-        await signInWithGooglePopup();
+        // await signInWithGooglePopup();
+        dispatch(googleSignInStart());
     }
 
     const onSubmitForm = async (event) => {
         event.preventDefault();
         const { email, password } = formData;
-        try {
-            await signInAuthUserWithEmailAndPassword(email, password);
-            onResetForm();
-        } catch (error) {
-            if (['auth/wrong-password', "auth/user-not-found"].includes(error.code)) {
-                alert("Email or password is invalid!");
-            }
-            console.log(error);
-        }
+        dispatch(emailSignInStart(email, password, navigate));
     }
     return (
         <div className="sign-in-container">
