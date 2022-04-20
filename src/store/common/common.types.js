@@ -1,0 +1,3 @@
+export const COMMON_ACTION_TYPES = {
+    REDIRECT_PAGE: 'common/REDIRECT_PAGE'
+}
